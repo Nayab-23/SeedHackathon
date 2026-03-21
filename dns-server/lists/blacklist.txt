@@ -1,0 +1,6 @@
+# Example blacklist domains
+# One domain per line
+# Comments start with #
+ads.example.com
+tracker.example.com
+malware.com
