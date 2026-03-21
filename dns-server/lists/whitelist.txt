@@ -1,0 +1,5 @@
+# Example whitelist domains
+# One domain per line
+# Comments start with #
+# These domains are always allowed, even if on blacklist
+safe.example.com
