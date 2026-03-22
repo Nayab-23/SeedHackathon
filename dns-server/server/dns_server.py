@@ -6,6 +6,11 @@ from server.filter import DomainFilter, Action
 from server.resolver import Resolver
 from server.blocker import Blocker
 
+try:
+    from flttr.logger import log
+except ImportError:
+    log = None
+
 
 class DNSServer:
     def __init__(self, config: dict, query_logger=None):
@@ -51,23 +56,25 @@ class DNSServer:
             domain = str(request.q.qname)
             query_type = self._get_query_type_name(request.q.qtype)
         except Exception as e:
-            print(f"[ERR] Failed to parse from {client_ip}: {e}")
+            if log:
+                log.error(f"Failed to parse DNS packet from {client_ip}: {e}")
             return
 
         action = self.domain_filter.check(domain)
 
         if action == Action.BLOCKED:
-            print(f"[BLOCK] {domain} blocked for {client_ip}")
             response_data = self.blocker.build_blocked_response(data)
         else:
             response_data = self.resolver.resolve(data)
             if response_data is None:
-                print(f"[ERR] Upstream failed for {client_ip} - {domain}")
+                if log:
+                    log.error(f"Upstream DNS failed for {domain} from {client_ip}")
                 response_data = self._build_servfail_response(data)
-            else:
-                print(f"[OK] {domain} -> {client_ip}")
 
         response_ms = (time.time() - start_time) * 1000
+
+        if log:
+            log.dns(action.value, domain, query_type, client_ip, response_ms)
 
         if self.query_logger:
             self.query_logger.log(client_ip, domain, query_type, action.value, response_ms)
@@ -75,7 +82,8 @@ class DNSServer:
         try:
             self.socket.sendto(response_data, client_addr)
         except Exception as e:
-            print(f"[ERR] Send failed to {client_ip}: {e}")
+            if log:
+                log.error(f"Send failed to {client_ip}: {e}")
 
     def start(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -84,11 +92,13 @@ class DNSServer:
         self.socket.bind((self.listen_address, self.port))
 
         self.running = True
-        print(f"[FLTTR] DNS Server listening on {self.listen_address}:{self.port}")
-        print(f"[FLTTR] Upstream DNS: {self.config['upstream']['dns_server']}:{self.config['upstream']['port']}")
-        print(f"[FLTTR] Blocking mode: {self.config['blocking']['mode']}")
-        print(f"[FLTTR] Blacklist: {len(self.domain_filter.blacklist)} domains loaded")
-        print("[FLTTR] Press Ctrl+C to stop\n")
+        if log:
+            log.system(f"DNS listening on {self.listen_address}:{self.port}")
+            log.system(f"Upstream: {self.config['upstream']['dns_server']}:{self.config['upstream']['port']}")
+            log.system(f"Block mode: {self.config['blocking']['mode']}")
+            log.system(f"Blacklist: {len(self.domain_filter.blacklist)} domains loaded")
+        else:
+            print(f"[FLTTR] DNS Server listening on {self.listen_address}:{self.port}")
 
         try:
             while self.running:
@@ -103,7 +113,10 @@ class DNSServer:
                 except Exception:
                     continue
         except KeyboardInterrupt:
-            print("\n[FLTTR] Shutting down...")
+            if log:
+                log.system("Shutting down...")
+            else:
+                print("\n[FLTTR] Shutting down...")
         finally:
             self.stop()
 
