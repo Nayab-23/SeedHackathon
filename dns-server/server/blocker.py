@@ -20,7 +20,7 @@ class Blocker:
                         rname=request.q.qname,
                         rtype=QTYPE.A,
                         rclass=1,
-                        ttl=300,
+                        ttl=1,
                         rdata=A("0.0.0.0"),
                     )
                 )
