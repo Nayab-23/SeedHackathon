@@ -1,4 +1,7 @@
 import socket
+from dnslib import DNSRecord
+
+MAX_TTL = 5
 
 
 class Resolver:
@@ -14,8 +17,18 @@ class Resolver:
             sock.sendto(query_data, (self.upstream_server, self.upstream_port))
             response, _ = sock.recvfrom(65535)
             sock.close()
-            return response
+            return self._clamp_ttl(response)
         except socket.timeout:
             return None
         except socket.error:
             return None
+
+    def _clamp_ttl(self, response: bytes) -> bytes:
+        try:
+            record = DNSRecord.parse(response)
+            for rr in record.rr:
+                if rr.ttl > MAX_TTL:
+                    rr.ttl = MAX_TTL
+            return record.pack()
+        except Exception:
+            return response
