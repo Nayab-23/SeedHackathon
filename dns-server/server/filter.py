@@ -1,14 +1,17 @@
+from enum import Enum
 from typing import Set
-from openclaw.observer import Action
+
+
+class Action(Enum):
+    ALLOWED = "ALLOWED"
+    BLOCKED = "BLOCKED"
 
 
 class DomainFilter:
-    def __init__(self, blacklist_path: str, whitelist_path: str):
+    def __init__(self, blacklist_path: str):
         self.blacklist_path = blacklist_path
-        self.whitelist_path = whitelist_path
         self.blacklist: Set[str] = set()
-        self.whitelist: Set[str] = set()
-        self._load_lists()
+        self._load_list()
 
     def _normalize_domain(self, domain: str) -> str:
         domain = domain.strip().lower()
@@ -16,10 +19,10 @@ class DomainFilter:
             domain = domain[:-1]
         return domain
 
-    def _load_list(self, filepath: str) -> Set[str]:
+    def _load_list(self):
         domains = set()
         try:
-            with open(filepath, "r") as f:
+            with open(self.blacklist_path, "r") as f:
                 for line in f:
                     line = line.strip()
                     if not line or line.startswith("#"):
@@ -29,14 +32,10 @@ class DomainFilter:
                         domains.add(domain)
         except FileNotFoundError:
             pass
-        return domains
-
-    def _load_lists(self):
-        self.blacklist = self._load_list(self.blacklist_path)
-        self.whitelist = self._load_list(self.whitelist_path)
+        self.blacklist = domains
 
     def reload(self):
-        self._load_lists()
+        self._load_list()
 
     def _is_subdomain_of(self, domain: str, target: str) -> bool:
         if domain == target:
@@ -45,19 +44,9 @@ class DomainFilter:
             return True
         return False
 
-    def _check_in_list(self, domain: str, domain_list: Set[str]) -> bool:
-        for entry in domain_list:
-            if self._is_subdomain_of(domain, entry):
-                return True
-        return False
-
     def check(self, domain: str) -> Action:
         domain = self._normalize_domain(domain)
-
-        if self._check_in_list(domain, self.whitelist):
-            return Action.WHITELISTED
-
-        if self._check_in_list(domain, self.blacklist):
-            return Action.BLOCKED
-
+        for entry in self.blacklist:
+            if self._is_subdomain_of(domain, entry):
+                return Action.BLOCKED
         return Action.ALLOWED
