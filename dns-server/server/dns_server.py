@@ -31,6 +31,7 @@ class DNSServer:
 
         self.socket = None
         self.running = False
+        self._last_reload = time.time()
 
     def _get_query_type_name(self, qtype):
         try:
@@ -109,6 +110,14 @@ class DNSServer:
                     )
                     thread.start()
                 except socket.timeout:
+                    # Auto-reload blacklist every 5 seconds
+                    if time.time() - self._last_reload > 5:
+                        old_count = len(self.domain_filter.blacklist)
+                        self.domain_filter.reload()
+                        new_count = len(self.domain_filter.blacklist)
+                        if old_count != new_count and log:
+                            log.system(f"Blacklist reloaded: {old_count} -> {new_count} domains")
+                        self._last_reload = time.time()
                     continue
                 except Exception:
                     continue

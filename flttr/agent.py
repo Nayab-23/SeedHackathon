@@ -13,6 +13,7 @@ Usage:
 
 import requests
 import json
+from flttr.logger import log
 
 
 SYSTEM_PROMPT = """You are FLTTR, a DNS filtering assistant. You help manage a DNS blacklist.
@@ -45,12 +46,14 @@ User: "what's blocked right now?"
 
 
 class FlttrAgent:
-    def __init__(self, api_base: str = "http://localhost:8080", ollama_base: str = "http://localhost:11434", model: str = "nemotron"):
+    def __init__(self, api_base: str = "http://localhost:8080", ollama_base: str = "http://localhost:11434", model: str = "nemotron-3-nano:4b"):
         self.api_base = api_base.rstrip("/")
         self.ollama_base = ollama_base.rstrip("/")
         self.model = model
+        log.agent("initialized", detail=f"model={model} ollama={ollama_base}")
 
     def _call_nemotron(self, user_message: str) -> str:
+        log.agent("thinking", detail=f'"{user_message}"')
         response = requests.post(
             f"{self.ollama_base}/api/generate",
             json={
@@ -63,7 +66,9 @@ class FlttrAgent:
             timeout=30,
         )
         response.raise_for_status()
-        return response.json()["response"]
+        result = response.json()["response"]
+        log.agent("response received", detail=result[:100])
+        return result
 
     def _parse_response(self, raw: str) -> dict:
         return json.loads(raw)
@@ -76,6 +81,7 @@ class FlttrAgent:
                 json={"domain": domain, "reason": reason, "added_by": "agent"},
             )
             results.append({"domain": domain, "status": resp.status_code})
+        log.agent("block", domains)
         return results
 
     def _unblock_domains(self, domains: list) -> list:
@@ -83,19 +89,29 @@ class FlttrAgent:
         for domain in domains:
             resp = requests.delete(f"{self.api_base}/api/lists/{domain}")
             results.append({"domain": domain, "status": resp.status_code})
+        log.agent("unblock", domains)
         return results
 
     def _get_blacklist(self) -> dict:
         resp = requests.get(f"{self.api_base}/api/lists")
-        return resp.json()
+        data = resp.json()
+        log.agent("list", detail=f"{data.get('total', 0)} domains on blacklist")
+        return data
 
     def _get_status(self) -> dict:
         resp = requests.get(f"{self.api_base}/api/system/health")
         return resp.json()
 
     def process_command(self, command: str) -> dict:
-        raw = self._call_nemotron(command)
-        parsed = self._parse_response(raw)
+        try:
+            raw = self._call_nemotron(command)
+            parsed = self._parse_response(raw)
+        except requests.RequestException as e:
+            log.error(f"Ollama request failed: {e}")
+            return {"action": "error", "detail": str(e)}
+        except json.JSONDecodeError as e:
+            log.error(f"Failed to parse agent response: {e}")
+            return {"action": "error", "detail": f"Bad JSON from model: {e}"}
 
         action = parsed.get("action")
         domains = parsed.get("domains", [])
@@ -112,4 +128,5 @@ class FlttrAgent:
         elif action == "status":
             return {"action": "status", "data": self._get_status()}
         else:
+            log.error(f"Unknown agent action: {action}")
             return {"action": "unknown", "raw": parsed}
