@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyGuard Monitor</title>
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+<style>
+html,body{margin:0;height:100%;background:#000;color:#64748b;font-family:system-ui,sans-serif}
+.wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px}
+h1{font-size:1rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:#334155}
+p{font-size:.85rem;margin-top:8px;max-width:420px;line-height:1.5}
+.err{color:#f87171;font-size:.8rem;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>StudyGuard Monitor Active</h1>
+  <p>Subscribing to parent audio. Keep this window open on the Jetson.</p>
+  <p class="err" id="err"></p>
+</div>
+<script>
+(function(){
+  var client = null;
+  var reconnectTimer = null;
+  var APP = null, CH = null, TOK = null;
+
+  function setErr(msg){ var e=document.getElementById('err'); if(e) e.textContent=msg||''; }
+
+  async function fetchCfg(){
+    var r = await fetch('/agora/token');
+    if(!r.ok) throw new Error('token endpoint failed');
+    return r.json();
+  }
+
+  async function join(){
+    if(typeof AgoraRTC==='undefined'){
+      setErr('Agora SDK not loaded.');
+      return;
+    }
+    try{
+      var cfg = await fetchCfg();
+      APP = cfg.appId;
+      CH = cfg.channel || 'studyguard-room';
+      TOK = cfg.token;
+      if(client){
+        try{ await client.leave(); }catch(_){}
+        client = null;
+      }
+      client = AgoraRTC.createClient({ mode:'rtc', codec:'vp8' });
+      client.on('user-published', async function(user, mediaType){
+        try{
+          await client.subscribe(user, mediaType);
+          if(mediaType === 'audio' && user.audioTrack){
+            user.audioTrack.play();
+          }
+        }catch(e){ console.error(e); setErr('Subscribe error'); }
+      });
+      client.on('connection-state-change', function(cur, prev, reason){
+        if(cur === 'DISCONNECTED' || cur === 'FAILED'){
+          setErr('Disconnected — reconnecting…');
+          scheduleReconnect();
+        }
+      });
+      await client.join(APP, CH, TOK||null, null);
+      setErr('');
+    }catch(e){
+      console.error(e);
+      setErr((e && e.message) ? e.message : String(e));
+      scheduleReconnect();
+    }
+  }
+
+  function scheduleReconnect(){
+    if(reconnectTimer) clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(function(){ join(); }, 2500);
+  }
+
+  join();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyGuard Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-shell state-studying" id="appShell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="icon-btn" id="navToggle" aria-label="Toggle sidebar">☰</button>
+        <div class="brand-wrap">
+          <div class="brand">studyguard</div>
+          <div class="brand-sub">parent control surface</div>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <div class="status-pill" id="badge">STUDYING</div>
+        <div class="status-pill neutral" id="voiceBadge">SLEEPING</div>
+        <div class="clock" id="clock">--:--:--</div>
+      </div>
+
+      <div class="topbar-right">
+        <button type="button" class="btn btn-primary" id="micBtn">Arm Mic</button>
+      </div>
+    </header>
+
+    <div class="shell-body">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-head">
+          <div class="sidebar-title">overview</div>
+          <div class="sidebar-sub">use the existing StudyGuard backend with a cleaner shell</div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button type="button" class="nav-link active" data-target="overviewSection">dashboard</button>
+          <button type="button" class="nav-link" data-target="sitesSection">site control</button>
+          <button type="button" class="nav-link" data-target="activitySection">activity log</button>
+          <button type="button" class="nav-link" data-target="logsSection">logs</button>
+        </nav>
+
+        <div class="sidebar-block">
+          <div class="sidebar-label">system</div>
+          <div class="mini-list">
+            <div class="mini-item">
+              <span>voice agent</span>
+              <span class="mini-value" id="agentStatus">offline</span>
+            </div>
+            <div class="mini-item">
+              <span>camera</span>
+              <span class="mini-value" id="cameraStatus">unknown</span>
+            </div>
+            <div class="mini-item">
+              <span>reachy</span>
+              <span class="mini-value" id="reachyStatus">unknown</span>
+            </div>
+            <div class="mini-item">
+              <span>uptime</span>
+              <span class="mini-value" id="uptimeVal">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-block">
+          <div class="sidebar-label">quick actions</div>
+          <button type="button" class="btn btn-secondary wide-btn" id="lockBtn">Lock Down Defaults</button>
+          <a class="text-link" href="/docs" target="_blank" rel="noreferrer">open api docs</a>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="page-section" id="overviewSection">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">live parent dashboard</div>
+              <h1>Study session overview</h1>
+              <p>SeedHackathon dashboard styling on top of the current StudyGuard controls, feeds, and moderation flows.</p>
+            </div>
+          </div>
+
+          <div class="overview-grid">
+            <article class="panel panel-camera">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">live workspace feed</div>
+                  <div class="panel-sub">direct stream from the current camera endpoint</div>
+                </div>
+                <div class="panel-meta" id="cameraMeta">streaming</div>
+              </div>
+              <div class="camera-frame">
+                <img id="cam" src="/api/camera/stream" alt="Live camera feed" decoding="async" fetchpriority="high">
+                <div class="camera-overlay">
+                  <span class="overlay-chip" id="cameraChip">camera link live</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel panel-stats">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-label">study time</div>
+                  <div class="stat-value stat-good" id="studyVal">0m</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">distracted</div>
+                  <div class="stat-value stat-bad" id="distVal">0m</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">focus score</div>
+                  <div class="stat-value stat-accent" id="focusVal">--</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">session state</div>
+                  <div class="stat-value stat-neutral" id="stateVal">studying</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel panel-system">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">system snapshot</div>
+                  <div class="panel-sub">current backend and robot service health</div>
+                </div>
+              </div>
+              <div class="system-grid">
+                <div class="system-card">
+                  <div class="system-label">voice state</div>
+                  <div class="system-value" id="voiceStateVal">sleeping</div>
+                </div>
+                <div class="system-card">
+                  <div class="system-label">voice engine</div>
+                  <div class="system-value" id="agoraVal">offline</div>
+                </div>
+                <div class="system-card">
+                  <div class="system-label">camera</div>
+                  <div class="system-value" id="cameraHealthVal">unknown</div>
+                </div>
+                <div class="system-card">
+                  <div class="system-label">reachy</div>
+                  <div class="system-value" id="reachyHealthVal">unknown</div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel panel-feed" id="activitySection">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">activity log</div>
+                  <div class="panel-sub">latest robot, study, and moderation events</div>
+                </div>
+              </div>
+              <div class="feed" id="feed"></div>
+            </article>
+
+            <article class="panel panel-feed">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">conversation transcript</div>
+                  <div class="panel-sub">everything the child says and everything StudyGuard says back</div>
+                </div>
+              </div>
+              <div class="feed" id="conversationFeed"></div>
+            </article>
+
+            <article class="panel panel-feed">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">voice debug</div>
+                  <div class="panel-sub">engine state, errors, and audio loop events</div>
+                </div>
+              </div>
+              <div class="feed" id="voiceFeed"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page-section" id="sitesSection">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">moderation tools</div>
+              <h2>Site controls</h2>
+              <p>All existing block, allow, and manual override features stay wired to the current StudyGuard API.</p>
+            </div>
+          </div>
+
+          <div class="sites-grid">
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">blocked domains</div>
+                  <div class="panel-sub">hard blocks enforced through the current DNS path</div>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>domain</th><th>added</th><th></th></tr>
+                  </thead>
+                  <tbody id="blkBody"></tbody>
+                </table>
+                <div class="empty-state" id="blkEmpty" hidden>No blocked domains.</div>
+              </div>
+              <div class="action-row">
+                <input type="text" id="blkIn" placeholder="e.g. netflix.com" autocomplete="off">
+                <button type="button" class="btn btn-primary" id="addBlockBtn">Block Site</button>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">voice-approved access</div>
+                  <div class="panel-sub">temporary allowlist entries and manual parent override</div>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>domain</th><th>reason</th><th>expires</th></tr>
+                  </thead>
+                  <tbody id="alwBody"></tbody>
+                </table>
+                <div class="empty-state" id="alwEmpty" hidden>No temporary access granted.</div>
+              </div>
+              <div class="divider"></div>
+              <div class="override-box">
+                <div class="override-title">manual override</div>
+                <div class="action-row multi">
+                  <input type="text" id="ovrDomain" placeholder="e.g. youtube.com" autocomplete="off">
+                  <input type="number" id="ovrMinutes" min="1" max="60" value="30" placeholder="Minutes">
+                </div>
+                <div class="action-row">
+                  <button type="button" class="btn btn-primary" id="grantBtn">Grant</button>
+                  <button type="button" class="btn btn-danger" id="denyBtn">Deny</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page-section" id="logsSection">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">network visibility</div>
+              <h2>DNS logs</h2>
+              <p>Live dnsmasq request traffic from the Jetson. Blocked requests are highlighted in red.</p>
+            </div>
+          </div>
+
+          <article class="panel panel-feed panel-logs">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">dns request log</div>
+                <div class="panel-sub">queries, forwards, replies, and blocked resolutions</div>
+              </div>
+            </div>
+            <div class="feed" id="dnsFeed"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>
