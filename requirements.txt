@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+sqlalchemy
+openai
+opencv-python-headless
+pillow
+requests
+pyaudio
+python-dotenv
+websockets
+aiofiles
+python-multipart
+numpy
+imageio-ffmpeg
+scipy  # required indirectly by reachy_mini runtime on the Jetson
