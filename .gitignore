@@ -1,2 +1,12 @@
 .claude
 dns-server/venv
+dashboard/.venv
+dashboard/frontend/node_modules
+dashboard/frontend/dist
+dashboard/__pycache__
+dashboard/routes/__pycache__
+**/__pycache__
+*.pyc
+*.db
+*.db-wal
+*.db-shm
