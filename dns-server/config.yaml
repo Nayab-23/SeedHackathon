@@ -11,7 +11,7 @@ blocking:
   mode: "zero_ip"  # Options: "zero_ip" or "nxdomain"
 
 openclaw:
-  enabled: true
+  enabled: false
   log_file: "logs/openclaw.log"
 
 lists:
