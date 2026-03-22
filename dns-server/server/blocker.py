@@ -1,5 +1,5 @@
 from dnslib import DNSRecord, QTYPE, RCODE
-from dnslib.dns import A, RR
+from dnslib.dns import A, AAAA, RR
 
 
 class Blocker:
@@ -24,5 +24,17 @@ class Blocker:
                         rdata=A("0.0.0.0"),
                     )
                 )
+            elif qtype == QTYPE.AAAA:
+                reply.add_answer(
+                    RR(
+                        rname=request.q.qname,
+                        rtype=QTYPE.AAAA,
+                        rclass=1,
+                        ttl=1,
+                        rdata=AAAA("::"),
+                    )
+                )
+            else:
+                reply.header.rcode = RCODE.NXDOMAIN
 
         return reply.pack()
