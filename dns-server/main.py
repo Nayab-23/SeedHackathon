@@ -8,6 +8,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 
 from server.dns_server import DNSServer
 
+try:
+    from flttr.logger import log
+except ImportError:
+    log = None
+
 
 def load_config(config_path="config.yaml"):
     try:
@@ -25,6 +30,9 @@ def load_config(config_path="config.yaml"):
 def main():
     config = load_config()
 
+    if log:
+        log.banner()
+
     # Try to set up FLTTR query logger (optional — works without it)
     query_logger = None
     try:
@@ -34,11 +42,14 @@ def main():
         db_path = config.get("flttr", {}).get("db_path", "../flttr/data/flttr.db")
         init_db(db_path)
         query_logger = QueryLogger(db_path)
-        print("[FLTTR] Database initialized, query logging active")
+        if log:
+            log.system("Database initialized — query logging active")
     except ImportError:
-        print("[FLTTR] flttr module not found — running DNS only (no logging)")
+        if log:
+            log.error("flttr module not found — running DNS only (no logging)")
     except Exception as e:
-        print(f"[FLTTR] Could not init database: {e} — running DNS only")
+        if log:
+            log.error(f"Could not init database: {e} — running DNS only")
 
     # Try to start dashboard (optional)
     try:
@@ -56,22 +67,27 @@ def main():
             kwargs={"app": dashboard_app, "host": host, "port": port, "log_level": "warning"},
             daemon=True,
         ).start()
-        print(f"[FLTTR] Dashboard at http://{host}:{port}")
+        if log:
+            log.system(f"Dashboard running at http://{host}:{port}")
 
-        # Use the same server instance
         server = server_tmp
     except ImportError:
-        print("[FLTTR] Dashboard dependencies not installed — skipping")
+        if log:
+            log.error("Dashboard dependencies not installed — skipping")
         server = DNSServer(config, query_logger=query_logger)
     except Exception as e:
-        print(f"[FLTTR] Dashboard failed to start: {e}")
+        if log:
+            log.error(f"Dashboard failed to start: {e}")
         server = DNSServer(config, query_logger=query_logger)
 
-    print()
+    if log:
+        log.system("Ready — press Ctrl+C to stop\n")
+
     try:
         server.start()
     except Exception as e:
-        print(f"[!] Server error: {e}")
+        if log:
+            log.error(f"Server error: {e}")
         sys.exit(1)
 
 
