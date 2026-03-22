@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLTTR — Smart DNS Companion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0a0a0a;
+    color: #f0f0f0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 60px 80px;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide counter */
+  .slide-num {
+    position: absolute;
+    bottom: 30px;
+    right: 50px;
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+
+  /* ── SLIDE 1: Title ── */
+  .slide-1 {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a0a0a 100%);
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide-1 .logo {
+    font-size: 96px;
+    font-weight: 800;
+    letter-spacing: -3px;
+    background: linear-gradient(135deg, #a855f7, #6366f1, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+  }
+  .slide-1 .tagline {
+    font-size: 26px;
+    font-weight: 300;
+    color: #a0a0a0;
+    letter-spacing: 1px;
+  }
+  .slide-1 .subtitle {
+    margin-top: 40px;
+    font-size: 16px;
+    color: #666;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .slide-1 .glow {
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  /* ── SLIDE 2: Problem / Solution ── */
+  .slide-2 { background: #0a0a0a; }
+  .slide-2 .section-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #a855f7;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+  .slide-2 h2 {
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 48px;
+    max-width: 800px;
+  }
+  .slide-2 .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    max-width: 1000px;
+  }
+  .slide-2 .col h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .slide-2 .col h3 .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .slide-2 .col ul {
+    list-style: none;
+    padding: 0;
+  }
+  .slide-2 .col ul li {
+    font-size: 17px;
+    color: #bbb;
+    padding: 8px 0;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .slide-2 .col ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #555;
+  }
+
+  /* ── SLIDE 3: Architecture Overview ── */
+  .slide-3 { background: #0a0a0a; }
+  .slide-3 .section-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #6366f1;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .slide-3 h2 {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 48px;
+  }
+  .slide-3 .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 0;
+    align-items: start;
+    max-width: 1100px;
+  }
+  .slide-3 .arch-box {
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 32px;
+    background: #111;
+    position: relative;
+  }
+  .slide-3 .arch-box h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .slide-3 .arch-box .mono {
+    font-size: 13px;
+    color: #888;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-bottom: 20px;
+  }
+  .slide-3 .arch-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .slide-3 .arch-box ul li {
+    padding: 6px 0;
+    font-size: 15px;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .slide-3 .arch-box ul li .chip {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .slide-3 .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 200px;
+  }
+  .slide-3 .connector .arrow-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .slide-3 .connector svg { width: 50px; height: 24px; }
+  .dns-accent { border-color: #c92a2a44; }
+  .dns-accent h3 { color: #ffa8a8; }
+  .flttr-accent { border-color: #9c36b544; }
+  .flttr-accent h3 { color: #e599f7; }
+
+  /* ── SLIDE 4: DNS Pipeline ── */
+  .slide-4 { background: #0a0a0a; }
+  .slide-4 .section-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #e03131;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .slide-4 h2 {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 48px;
+  }
+  .slide-4 .pipeline {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    max-width: 1100px;
+    overflow-x: auto;
+  }
+  .slide-4 .step {
+    flex: 0 0 auto;
+    width: 180px;
+    text-align: center;
+  }
+  .slide-4 .step .icon-box {
+    width: 72px; height: 72px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 28px;
+    border: 2px solid;
+  }
+  .slide-4 .step h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .slide-4 .step p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.4;
+  }
+  .slide-4 .arrow-sep {
+    flex: 0 0 auto;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30px;
+    color: #444;
+    font-size: 20px;
+  }
+  .slide-4 .branch-label {
+    margin-top: 36px;
+    display: flex;
+    gap: 60px;
+    max-width: 1100px;
+  }
+  .slide-4 .branch-card {
+    flex: 1;
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 1px solid #222;
+    background: #111;
+  }
+  .slide-4 .branch-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .slide-4 .branch-card p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .blocked-card { border-color: #c92a2a55 !important; }
+  .blocked-card h4 { color: #ffa8a8; }
+  .allowed-card { border-color: #2f9e4455 !important; }
+  .allowed-card h4 { color: #b2f2bb; }
+  .logged-card { border-color: #7048e855 !important; }
+  .logged-card h4 { color: #d0bfff; }
+
+  /* ── SLIDE 5: AI Layer ── */
+  .slide-5 {
+    background: linear-gradient(160deg, #0a0a0a 0%, #120a20 100%);
+  }
+  .slide-5 .section-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #9c36b5;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .slide-5 h2 {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 48px;
+  }
+  .slide-5 .ai-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    max-width: 1000px;
+  }
+  .slide-5 .ai-card {
+    background: #151520;
+    border: 1px solid #2a2a3a;
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .slide-5 .ai-card .ai-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+  .slide-5 .ai-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #e599f7;
+  }
+  .slide-5 .ai-card p {
+    font-size: 14px;
+    color: #999;
+    line-height: 1.6;
+  }
+  .slide-5 .tech-stack {
+    margin-top: 40px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .slide-5 .tech-chip {
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid #333;
+    font-size: 13px;
+    font-weight: 600;
+    color: #bbb;
+    background: #1a1a1a;
+  }
+
+  /* Navigation hints */
+  .nav-hint {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #444;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SLIDE 1: Title ═══════════════════ -->
+<div class="slide slide-1 active" id="s1">
+  <div class="glow"></div>
+  <div class="logo">FLTTR</div>
+  <div class="tagline">Smart DNS Companion for Families</div>
+  <div class="subtitle">AI-Powered Content Filtering on NVIDIA Jetson Orin Nano</div>
+  <span class="slide-num">01 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 2: Problem & Solution ═══════════════════ -->
+<div class="slide slide-2" id="s2">
+  <div class="section-label">The Why</div>
+  <h2>Kids deserve a safer internet.<br>Parents deserve simplicity.</h2>
+  <div class="columns">
+    <div class="col">
+      <h3><span class="dot" style="background:#e03131;"></span> The Problem</h3>
+      <ul>
+        <li>Parental controls are clunky, cloud-dependent, and easily bypassed</li>
+        <li>Static blocklists go stale within days and can't adapt to new threats</li>
+        <li>Most solutions require per-device agents that kids can uninstall</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3><span class="dot" style="background:#2f9e44;"></span> Our Solution</h3>
+      <ul>
+        <li>Network-level DNS filtering — every device is protected automatically</li>
+        <li>On-device AI (Nemotron via Ollama) interprets natural-language parental commands</li>
+        <li>Runs locally on a Jetson Orin Nano — no cloud, no subscriptions, full privacy</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-num">02 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 3: Architecture Overview ═══════════════════ -->
+<div class="slide slide-3" id="s3">
+  <div class="section-label">Architecture</div>
+  <h2>Two Systems, One Device</h2>
+  <div class="arch-grid">
+    <!-- DNS Side -->
+    <div class="arch-box dns-accent">
+      <h3>dns-server/</h3>
+      <div class="mono">UDP :53 &mdash; C-level network filtering</div>
+      <ul>
+        <li><span class="chip" style="background:#c92a2a33;color:#ffa8a8;">CORE</span> DNS Server &mdash; intercepts all queries</li>
+        <li><span class="chip" style="background:#7048e833;color:#d0bfff;">FILTER</span> DomainFilter &mdash; blacklist lookup</li>
+        <li><span class="chip" style="background:#e0313133;color:#ffc9c9;">RESOLVE</span> Upstream via Cloudflare 1.1.1.1</li>
+        <li><span class="chip" style="background:#e0313133;color:#ffc9c9;">BLOCK</span> Returns 0.0.0.0 for blocked domains</li>
+        <li><span class="chip" style="background:#7048e833;color:#d0bfff;">LOG</span> QueryLogger &rarr; SQLite</li>
+      </ul>
+    </div>
+    <!-- Connector -->
+    <div class="connector">
+      <div class="arrow-line">
+        <svg viewBox="0 0 50 24"><path d="M5 12 H35 M30 6 L38 12 L30 18" stroke="#555" stroke-width="2" fill="none"/></svg>
+        SQLite
+        <svg viewBox="0 0 50 24"><path d="M45 12 H15 M20 6 L12 12 L20 18" stroke="#555" stroke-width="2" fill="none"/></svg>
+      </div>
+    </div>
+    <!-- FLTTR Side -->
+    <div class="arch-box flttr-accent">
+      <h3>flttr/</h3>
+      <div class="mono">REST :8080 &mdash; AI intelligence layer</div>
+      <ul>
+        <li><span class="chip" style="background:#1971c233;color:#a5d8ff;">API</span> FastAPI Dashboard for parents</li>
+        <li><span class="chip" style="background:#9c36b533;color:#e599f7;">AGENT</span> Command Interpreter (NLP)</li>
+        <li><span class="chip" style="background:#9c36b533;color:#e599f7;">LLM</span> Ollama + Nemotron on-device</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-num">03 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 4: DNS Pipeline ═══════════════════ -->
+<div class="slide slide-4" id="s4">
+  <div class="section-label">Deep Dive</div>
+  <h2>DNS Filtering Pipeline</h2>
+  <div class="pipeline">
+    <div class="step">
+      <div class="icon-box" style="background:#1971c215;border-color:#1971c2;">
+        <span>&#x1F4F1;</span>
+      </div>
+      <h4>Client Request</h4>
+      <p>Device sends DNS query to Orin Nano on port 53</p>
+    </div>
+    <div class="arrow-sep">&rarr;</div>
+    <div class="step">
+      <div class="icon-box" style="background:#c92a2a15;border-color:#c92a2a;">
+        <span>&#x1F5A5;</span>
+      </div>
+      <h4>DNS Server</h4>
+      <p>Receives UDP packet, extracts queried domain</p>
+    </div>
+    <div class="arrow-sep">&rarr;</div>
+    <div class="step">
+      <div class="icon-box" style="background:#7048e815;border-color:#7048e8;">
+        <span>&#x1F50D;</span>
+      </div>
+      <h4>DomainFilter</h4>
+      <p>Checks domain against blacklist.txt in memory</p>
+    </div>
+    <div class="arrow-sep">&rarr;</div>
+    <div class="step">
+      <div class="icon-box" style="background:#2f9e4415;border-color:#2f9e44;">
+        <span>&#x2696;</span>
+      </div>
+      <h4>Decision</h4>
+      <p>Branch: block or resolve upstream</p>
+    </div>
+    <div class="arrow-sep">&rarr;</div>
+    <div class="step">
+      <div class="icon-box" style="background:#7048e815;border-color:#7048e8;">
+        <span>&#x1F4BE;</span>
+      </div>
+      <h4>Log & Store</h4>
+      <p>QueryLogger writes to SQLite in background</p>
+    </div>
+  </div>
+  <div class="branch-label">
+    <div class="branch-card blocked-card">
+      <h4>Blocked Path</h4>
+      <p>Domain found in blacklist &rarr; returns <code style="color:#ffa8a8;">0.0.0.0</code> immediately. No upstream request made. Fast, private, and absolute.</p>
+    </div>
+    <div class="branch-card allowed-card">
+      <h4>Allowed Path</h4>
+      <p>Domain not in blacklist &rarr; forwards to <code style="color:#b2f2bb;">Cloudflare 1.1.1.1</code> for resolution. Response returned to client as normal.</p>
+    </div>
+    <div class="branch-card logged-card">
+      <h4>Observability</h4>
+      <p>Every query (blocked or allowed) is logged to <code style="color:#d0bfff;">SQLite</code> with timestamp, domain, and decision. Feeds the dashboard.</p>
+    </div>
+  </div>
+  <span class="slide-num">04 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 5: AI Intelligence Layer ═══════════════════ -->
+<div class="slide slide-5" id="s5">
+  <div class="section-label">Intelligence</div>
+  <h2>AI-Powered Parental Controls</h2>
+  <div class="ai-grid">
+    <div class="ai-card">
+      <div class="ai-icon">&#x1F4AC;</div>
+      <h3>Natural Language</h3>
+      <p>Parents type commands like <em>"block social media after 9pm"</em> or <em>"what sites did my kids visit today?"</em> &mdash; the FLTTR Agent translates intent into action.</p>
+    </div>
+    <div class="ai-card">
+      <div class="ai-icon">&#x1F9E0;</div>
+      <h3>On-Device LLM</h3>
+      <p>Nemotron runs locally via Ollama on the Jetson Orin Nano's GPU. Zero cloud calls, zero latency penalties, complete data privacy.</p>
+    </div>
+    <div class="ai-card">
+      <div class="ai-icon">&#x1F4CA;</div>
+      <h3>Live Dashboard</h3>
+      <p>FastAPI serves a real-time view of query logs, blocked domains, and network activity. Parents see exactly what's happening &mdash; no guesswork.</p>
+    </div>
+  </div>
+  <div class="tech-stack">
+    <span class="tech-chip">NVIDIA Jetson Orin Nano</span>
+    <span class="tech-chip">Ollama</span>
+    <span class="tech-chip">Nemotron LLM</span>
+    <span class="tech-chip">FastAPI</span>
+    <span class="tech-chip">SQLite</span>
+    <span class="tech-chip">Python</span>
+    <span class="tech-chip">UDP DNS</span>
+    <span class="tech-chip">Cloudflare 1.1.1.1</span>
+  </div>
+  <span class="slide-num">05 / 05</span>
+</div>
+
+<div class="nav-hint">&#8592; &#8594; arrow keys to navigate &middot; click to advance</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = ((n % total) + total) % total;
+    slides[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(current + 1);
+    if (e.key === 'ArrowLeft') go(current - 1);
+  });
+
+  document.addEventListener('click', () => go(current + 1));
+</script>
+</body>
+</html>
