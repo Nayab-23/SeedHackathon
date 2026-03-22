@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from flttr.database import get_connection
+from flttr.logger import log
 
 router = APIRouter(prefix="/api/lists", tags=["lists"])
 
@@ -81,6 +82,7 @@ def add_domain(req: AddDomainRequest):
     conn.close()
 
     _regenerate_blacklist_txt()
+    log.api("POST /api/lists", f"added {domain} (by {req.added_by})")
     return {"ok": True, "id": new_id}
 
 
@@ -105,6 +107,7 @@ def bulk_add(req: BulkAddRequest):
     conn.close()
 
     _regenerate_blacklist_txt()
+    log.api("POST /api/lists/bulk", f"added {added}, {duplicates} duplicates skipped")
     return {"ok": True, "added": added, "duplicates": duplicates}
 
 
@@ -120,4 +123,5 @@ def delete_domain(domain: str):
         raise HTTPException(status_code=404, detail="Domain not found")
 
     _regenerate_blacklist_txt()
+    log.api("DELETE /api/lists", f"removed {domain}")
     return {"ok": True}
