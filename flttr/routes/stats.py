@@ -76,3 +76,25 @@ def top_blocked(limit: int = 10):
     conn.close()
 
     return {"domains": [dict(r) for r in rows]}
+
+
+@router.get("/focus_agent")
+def focus_agent_stats():
+    """Show domains auto-blocked by the focus agent."""
+    conn = get_connection(db_path)
+    rows = conn.execute("""
+        SELECT domain, reason, added_at
+        FROM domain_lists
+        WHERE added_by = 'focus-agent'
+        ORDER BY added_at DESC
+        LIMIT 100
+    """).fetchall()
+    total = conn.execute(
+        "SELECT COUNT(*) FROM domain_lists WHERE added_by = 'focus-agent'"
+    ).fetchone()[0]
+    conn.close()
+
+    return {
+        "focus_agent_blocks": [dict(r) for r in rows],
+        "total": total,
+    }
