@@ -49,12 +49,16 @@ class DNSServer:
         start_time = time.time()
         client_ip = client_addr[0]
 
+        print(f"[CONN] Client: {client_ip}:{client_addr[1]} connected")
+
         try:
             request = DNSRecord.parse(data)
             domain = str(request.q.qname)
             query_type = self._get_query_type_name(request.q.qtype)
+            print(f"[RECV] {client_ip} -> {domain} ({query_type})")
         except Exception as e:
             response_ms = (time.time() - start_time) * 1000
+            print(f"[ERR] Failed to parse from {client_ip}: {e}")
             self.openclaw.observe(
                 client_ip=client_ip,
                 domain="[PARSE_ERROR]",
@@ -68,12 +72,16 @@ class DNSServer:
         action = self.filter.check(domain)
 
         if action == Action.BLOCKED:
+            print(f"[BLOCK] {domain} blocked for {client_ip}")
             response_data = self.blocker.build_blocked_response(data)
         else:
             response_data = self.resolver.resolve(data)
             if response_data is None:
+                print(f"[ERR] Upstream failed for {client_ip} - {domain}")
                 response_data = self._build_servfail_response(data)
                 action = Action.ERROR
+            else:
+                print(f"[OK] Forwarded {domain} for {client_ip}")
 
         response_ms = (time.time() - start_time) * 1000
 
@@ -87,8 +95,8 @@ class DNSServer:
 
         try:
             self.socket.sendto(response_data, client_addr)
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[ERR] Send failed to {client_ip}: {e}")
 
     def start(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
