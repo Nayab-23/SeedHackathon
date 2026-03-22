@@ -80,6 +80,26 @@ def main():
             log.error(f"Dashboard failed to start: {e}")
         server = DNSServer(config, query_logger=query_logger)
 
+    # Start the Focus Agent (reviews DNS logs for distracting sites)
+    try:
+        from flttr.focus_agent import FocusAgent
+
+        flttr_cfg = config.get("flttr", {})
+        focus_agent = FocusAgent(
+            db_path=flttr_cfg.get("db_path", "../flttr/data/flttr.db"),
+            ollama_base=config.get("ollama", {}).get("base_url", "http://localhost:11434"),
+            api_base=f"http://127.0.0.1:{config.get('flttr', {}).get('dashboard_port', 8080)}",
+            model=config.get("ollama", {}).get("model", "nemotron-3-nano:4b"),
+            poll_interval=config.get("focus_agent", {}).get("poll_interval", 30),
+        )
+        focus_agent.start()
+    except ImportError:
+        if log:
+            log.error("Focus agent module not found — skipping")
+    except Exception as e:
+        if log:
+            log.error(f"Focus agent failed to start: {e}")
+
     if log:
         log.system("Ready — press Ctrl+C to stop\n")
 
