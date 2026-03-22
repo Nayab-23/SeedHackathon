@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyGuard — AI Study Companion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #050508;
+    color: #f0f0f0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 60px 80px;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    animation: fadeIn 0.45s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-num {
+    position: absolute;
+    bottom: 30px;
+    right: 50px;
+    font-size: 13px;
+    color: #444;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 2px;
+  }
+
+  code, .mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ═══════════════════ SLIDE 1: Title ═══════════════════ */
+  .slide-1 {
+    background: radial-gradient(ellipse at 30% 50%, #0d0d20 0%, #050508 70%);
+    text-align: center;
+    align-items: center;
+  }
+  .slide-1 .pill {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 999px;
+    border: 1px solid #6366f133;
+    background: #6366f10a;
+    color: #818cf8;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .slide-1 .logo {
+    font-size: 88px;
+    font-weight: 900;
+    letter-spacing: -4px;
+    background: linear-gradient(135deg, #818cf8, #6366f1, #4f46e5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+  .slide-1 .tagline {
+    font-size: 28px;
+    font-weight: 300;
+    color: #a0a0b0;
+    margin-bottom: 48px;
+    letter-spacing: 0.5px;
+  }
+  .slide-1 .features-row {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+  }
+  .slide-1 .feat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    border-radius: 12px;
+    border: 1px solid #1a1a2e;
+    background: #0a0a14;
+    font-size: 14px;
+    color: #999;
+  }
+  .slide-1 .feat span { font-size: 20px; }
+  .slide-1 .glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  /* ═══════════════════ SLIDE 2: Problem & Solution ═══════════════════ */
+  .slide-2 { background: #050508; }
+  .slide-2 .section-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: #6366f1;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  .slide-2 h2 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 52px;
+    max-width: 750px;
+    letter-spacing: -1px;
+  }
+  .slide-2 h2 em {
+    font-style: normal;
+    color: #818cf8;
+  }
+  .slide-2 .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    max-width: 1000px;
+  }
+  .slide-2 .card {
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid #1a1a2e;
+    background: #0a0a12;
+  }
+  .slide-2 .card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .slide-2 .card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .slide-2 .card ul li {
+    font-size: 15px;
+    color: #aaa;
+    padding: 7px 0;
+    padding-left: 18px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .slide-2 .card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 14px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+  .slide-2 .problem li::before { background: #ef4444; }
+  .slide-2 .solution li::before { background: #22c55e; }
+
+  /* ═══════════════════ SLIDE 3: How It Works ═══════════════════ */
+  .slide-3 { background: #050508; }
+  .slide-3 .section-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: #818cf8;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .slide-3 h2 {
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 52px;
+    letter-spacing: -1px;
+  }
+  .slide-3 .flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    max-width: 1100px;
+  }
+  .slide-3 .flow-step {
+    position: relative;
+    text-align: center;
+    padding: 28px 16px;
+    border-radius: 16px;
+    border: 1px solid #1a1a2e;
+    background: #0a0a12;
+  }
+  .slide-3 .flow-step .num {
+    position: absolute;
+    top: 12px; left: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #444;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .slide-3 .flow-step .icon {
+    font-size: 36px;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .slide-3 .flow-step h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .slide-3 .flow-step p {
+    font-size: 12.5px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .slide-3 .flow-step::after {
+    content: '\2192';
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #333;
+    font-size: 18px;
+    z-index: 1;
+  }
+  .slide-3 .flow-step:last-child::after { content: ''; }
+  .slide-3 .outcome-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 1100px;
+    margin-top: 24px;
+  }
+  .slide-3 .outcome {
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 1px solid;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .slide-3 .outcome .emoji { font-size: 24px; flex-shrink: 0; }
+  .slide-3 .outcome h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .slide-3 .outcome p { font-size: 13px; color: #888; line-height: 1.5; }
+  .outcome-grant { border-color: #22c55e22; background: #22c55e06; }
+  .outcome-grant h4 { color: #86efac; }
+  .outcome-deny { border-color: #ef444422; background: #ef444406; }
+  .outcome-deny h4 { color: #fca5a5; }
+
+  /* ═══════════════════ SLIDE 4: Architecture ═══════════════════ */
+  .slide-4 { background: #050508; }
+  .slide-4 .section-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: #6366f1;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .slide-4 h2 {
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 44px;
+    letter-spacing: -1px;
+  }
+  .slide-4 .arch-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 18px;
+    max-width: 1100px;
+  }
+  .slide-4 .arch-card {
+    border-radius: 16px;
+    border: 1px solid;
+    padding: 24px;
+    background: #0a0a12;
+  }
+  .slide-4 .arch-card .card-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+  }
+  .slide-4 .arch-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .slide-4 .arch-card .card-sub {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #666;
+    margin-bottom: 16px;
+  }
+  .slide-4 .arch-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .slide-4 .arch-card ul li {
+    font-size: 13px;
+    color: #aaa;
+    padding: 4px 0;
+    line-height: 1.5;
+  }
+  .slide-4 .arch-card ul li code {
+    color: #818cf8;
+    font-size: 12px;
+    background: #6366f10a;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  .card-vision { border-color: #f59e0b33; }
+  .card-vision h3 { color: #fcd34d; }
+  .card-voice { border-color: #22c55e33; }
+  .card-voice h3 { color: #86efac; }
+  .card-dns { border-color: #ef444433; }
+  .card-dns h3 { color: #fca5a5; }
+  .card-dash { border-color: #6366f133; }
+  .card-dash h3 { color: #a5b4fc; }
+
+  .slide-4 .tech-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+    max-width: 1100px;
+  }
+  .slide-4 .tech-chip {
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid #1a1a2e;
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    background: #0a0a14;
+  }
+
+  /* ═══════════════════ SLIDE 5: Voice Argue Flow ═══════════════════ */
+  .slide-5 {
+    background: radial-gradient(ellipse at 70% 60%, #0d0d20 0%, #050508 70%);
+  }
+  .slide-5 .section-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: #22c55e;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .slide-5 h2 {
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 48px;
+    letter-spacing: -1px;
+  }
+  .slide-5 .convo {
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .slide-5 .bubble {
+    max-width: 520px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .bubble-kid {
+    align-self: flex-end;
+    background: #1a1a2e;
+    color: #ccc;
+    border-bottom-right-radius: 4px;
+  }
+  .bubble-kid .speaker {
+    font-size: 11px;
+    font-weight: 700;
+    color: #818cf8;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .bubble-guard {
+    align-self: flex-start;
+    background: #0f1f15;
+    border: 1px solid #22c55e22;
+    color: #ccc;
+    border-bottom-left-radius: 4px;
+  }
+  .bubble-guard .speaker {
+    font-size: 11px;
+    font-weight: 700;
+    color: #22c55e;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .slide-5 .result-row {
+    display: flex;
+    gap: 20px;
+    max-width: 700px;
+  }
+  .slide-5 .result-card {
+    flex: 1;
+    padding: 20px 24px;
+    border-radius: 14px;
+    border: 1px solid #22c55e22;
+    background: #22c55e06;
+  }
+  .slide-5 .result-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #86efac;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .slide-5 .result-card p {
+    font-size: 14px;
+    color: #999;
+    line-height: 1.5;
+  }
+  .slide-5 .result-card code {
+    color: #86efac;
+    font-size: 13px;
+  }
+  .slide-5 .side-note {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .slide-5 .side-card {
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #1a1a2e;
+    background: #0a0a12;
+  }
+  .slide-5 .side-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .slide-5 .side-card p {
+    font-size: 12.5px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .side-reachy h4 { color: #fcd34d; }
+  .side-expire h4 { color: #fca5a5; }
+  .side-log h4 { color: #a5b4fc; }
+
+  /* Navigation */
+  .nav-hint {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #333;
+    letter-spacing: 1px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SLIDE 1: Title ═══════════════════ -->
+<div class="slide slide-1 active" id="s1">
+  <div class="glow"></div>
+  <div class="pill">Seeed Embodied AI Hackathon &mdash; Santa Clara 2026</div>
+  <div class="logo">StudyGuard</div>
+  <div class="tagline">AI-Powered Study Companion on Reachy Mini &amp; Jetson Orin Nano</div>
+  <div class="features-row">
+    <div class="feat"><span>&#x1F4F7;</span> Vision Monitoring</div>
+    <div class="feat"><span>&#x1F399;</span> Voice AI Agent</div>
+    <div class="feat"><span>&#x1F916;</span> Reachy Mini Robot</div>
+    <div class="feat"><span>&#x1F6E1;</span> DNS Filtering</div>
+    <div class="feat"><span>&#x1F4CA;</span> Parent Dashboard</div>
+  </div>
+  <span class="slide-num">01 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 2: Problem & Solution ═══════════════════ -->
+<div class="slide slide-2" id="s2">
+  <div class="section-label">The Problem</div>
+  <h2>Keeping kids focused shouldn't mean<br><em>spying on them.</em></h2>
+  <div class="grid">
+    <div class="card problem">
+      <h3><span style="color:#ef4444;">&#x2716;</span> Today's Parental Controls</h3>
+      <ul>
+        <li>Cloud-dependent, privacy-invasive surveillance tools</li>
+        <li>Static blocklists that kids bypass in minutes</li>
+        <li>Per-device agents that get uninstalled</li>
+        <li>Binary block/allow with zero nuance or context</li>
+      </ul>
+    </div>
+    <div class="card solution">
+      <h3><span style="color:#22c55e;">&#x2714;</span> The StudyGuard Approach</h3>
+      <ul>
+        <li>Network-level DNS filtering — covers every device automatically</li>
+        <li>Orin nano Evaluates kids' arguments for access <em>fairly</em></li>
+        <li>Reachy Mini robot gives a physical, friendly presence</li>
+        <li>Vision classifies focus state — no screen recording, no keylogging</li>
+        <li>100% local on Jetson Orin Nano — no cloud, full privacy</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-num">02 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 3: How It Works ═══════════════════ -->
+<div class="slide slide-3" id="s3">
+  <div class="section-label">User Flow</div>
+  <h2>What Happens When a Site is Blocked</h2>
+  <div class="flow">
+    <div class="flow-step">
+      <span class="num">01</span>
+      <span class="icon">&#x1F4F1;</span>
+      <h4>Kid Hits Block</h4>
+      <p>DNS query for youtube.com returns 0.0.0.0 via dnsmasq</p>
+    </div>
+    <div class="flow-step">
+      <span class="num">02</span>
+      <span class="icon">&#x1F399;</span>
+      <h4>Kid Speaks Up</h4>
+      <p>"Hey, can I use YouTube? I need a calculus tutorial."</p>
+    </div>
+    <div class="flow-step">
+      <span class="num">03</span>
+      <span class="icon">&#x1F9E0;</span>
+      <h4>AI Evaluates</h4>
+      <p>Orin Nano weighs the argument against study stats &amp; context</p>
+    </div>
+    <div class="flow-step">
+      <span class="num">04</span>
+      <span class="icon">&#x1F916;</span>
+      <h4>Reachy Responds</h4>
+      <p>Robot nods yes or shakes no with physical head gestures</p>
+    </div>
+    <div class="flow-step" style="border-color:#22c55e22;">
+      <span class="num">05</span>
+      <span class="icon">&#x2705;</span>
+      <h4>Access Granted</h4>
+      <p>Domain added to allowlist for 30 min, then auto-revoked</p>
+    </div>
+  </div>
+  <div class="outcome-row">
+    <div class="outcome outcome-grant">
+      <span class="emoji">&#x1F44D;</span>
+      <div>
+        <h4>Granted — Time-Limited</h4>
+        <p>Domain unblocked in dnsmasq for N minutes. Reachy nods. Parent sees grant event in dashboard. Auto-expires.</p>
+      </div>
+    </div>
+    <div class="outcome outcome-deny">
+      <span class="emoji">&#x1F6AB;</span>
+      <div>
+        <h4>Denied — With Reason</h4>
+        <p>Orin Nano explains why ("you've been distracted 40% of the session"). Reachy shakes head. Kid can try a better argument.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">03 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 4: Architecture ═══════════════════ -->
+<div class="slide slide-4" id="s4">
+  <div class="section-label">Architecture</div>
+  <h2>Four Modules, One Device</h2>
+  <div class="arch-cols">
+    <div class="arch-card card-vision">
+      <div class="card-icon">&#x1F4F7;</div>
+      <h3>Vision Engine</h3>
+      <div class="card-sub">vision.py &mdash; every 10s</div>
+      <ul>
+        <li>Camera captures via <code>/dev/video1</code></li>
+        <li>Orin Nano classifies: <code>studying</code>, <code>distracted</code>, <code>phone</code></li>
+        <li>StateManager tracks focus time</li>
+        <li>MJPEG stream to dashboard</li>
+      </ul>
+    </div>
+    <div class="arch-card card-voice">
+      <div class="card-icon">&#x1F399;</div>
+      <h3>Voice Agent</h3>
+      <div class="card-sub">voice_loop.py &mdash; Whisper + Orin Nano</div>
+      <ul>
+        <li>PyAudio capture, silence detection</li>
+        <li>Whisper transcription</li>
+        <li>Conversational Orin Nano agent</li>
+        <li>Parses <code>ACTION_GRANT</code> / <code>ACTION_DENY</code></li>
+      </ul>
+    </div>
+    <div class="arch-card card-dns">
+      <div class="card-icon">&#x1F6E1;</div>
+      <h3>DNS Filtering</h3>
+      <div class="card-sub">argue.py &mdash; dnsmasq</div>
+      <ul>
+        <li>Writes <code>blocklist.conf</code> &amp; <code>allowlist.conf</code></li>
+        <li>Blocks to <code>0.0.0.0</code> and <code>::</code></li>
+        <li>Time-limited allowlist entries</li>
+        <li>Restarts dnsmasq on change</li>
+      </ul>
+    </div>
+    <div class="arch-card card-dash">
+      <div class="card-icon">&#x1F4CA;</div>
+      <h3>Parent Dashboard</h3>
+      <div class="card-sub">FastAPI &mdash; :8000</div>
+      <ul>
+        <li>Live camera feed &amp; focus stats</li>
+        <li>DNS traffic log viewer</li>
+        <li>Blocklist &amp; allowlist management</li>
+        <li>Manual grant/deny overrides</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tech-bar">
+    <span class="tech-chip">NVIDIA Jetson Orin Nano</span>
+    <span class="tech-chip">Reachy Mini (Pollen Robotics)</span>
+    <span class="tech-chip">Hugging Face Models</span>
+    <span class="tech-chip">Seeed Studio</span>
+    <span class="tech-chip">FastAPI</span>
+    <span class="tech-chip">dnsmasq</span>
+    <span class="tech-chip">SQLite</span>
+    <span class="tech-chip">OpenCV</span>
+    <span class="tech-chip">Agora</span>
+  </div>
+  <span class="slide-num">04 / 05</span>
+</div>
+
+<!-- ═══════════════════ SLIDE 5: Voice Argue Demo ═══════════════════ -->
+<div class="slide slide-5" id="s5">
+  <div class="section-label">The Magic Moment</div>
+  <h2>Kids Learn to Argue Their Case</h2>
+  <div class="convo">
+    <div class="bubble bubble-kid">
+      <div class="speaker">Kid</div>
+      Can I use YouTube? I need it for my homework.
+    </div>
+    <div class="bubble bubble-guard">
+      <div class="speaker">StudyGuard</div>
+      What specifically do you need on YouTube? You've been studying for 45 minutes with 82% focus.
+    </div>
+    <div class="bubble bubble-kid">
+      <div class="speaker">Kid</div>
+      There's a 3Blue1Brown video on linear algebra that explains eigenvalues way better than my textbook.
+    </div>
+    <div class="bubble bubble-guard">
+      <div class="speaker">StudyGuard</div>
+      That's a solid academic reason, and your focus has been strong. I'll unlock YouTube for 30 minutes.
+    </div>
+  </div>
+  <div class="result-row">
+    <div class="result-card">
+      <h4>Decision</h4>
+      <p><code>GRANTED</code> &mdash; youtube.com for 30 minutes</p>
+    </div>
+    <div class="result-card">
+      <h4>Why It Works</h4>
+      <p>Kids practice critical thinking and persuasion. Parents get fairness without micromanaging.</p>
+    </div>
+  </div>
+  <div class="side-note">
+    <div class="side-card side-reachy">
+      <h4>&#x1F916; Reachy Nods</h4>
+      <p>Physical head nod confirms approval. The robot makes it feel real, not just a popup.</p>
+    </div>
+    <div class="side-card side-expire">
+      <h4>&#x23F0; Auto-Expires</h4>
+      <p>After 30 min, domain is re-blocked automatically. No manual cleanup needed.</p>
+    </div>
+    <div class="side-card side-log">
+      <h4>&#x1F4DD; Fully Logged</h4>
+      <p>Every argument, decision, and grant is recorded. Parents review it all in the dashboard.</p>
+    </div>
+  </div>
+  <span class="slide-num">05 / 05</span>
+</div>
+
+<div class="nav-hint">&#8592; &#8594; arrow keys &middot; click to advance</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = ((n % total) + total) % total;
+    slides[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(current - 1); }
+  });
+
+  document.addEventListener('click', e => {
+    if (e.target.tagName !== 'A') go(current + 1);
+  });
+</script>
+</body>
+</html>
