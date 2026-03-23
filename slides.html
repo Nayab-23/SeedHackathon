@@ -549,8 +549,8 @@
     <div class="flow-step">
       <span class="num">03</span>
       <span class="icon">&#x1F9E0;</span>
-      <h4>AI Evaluates</h4>
-      <p>Orin Nano weighs the argument against study stats &amp; context</p>
+      <h4>Brev Evaluates</h4>
+      <p>Orin Nano sends request to Brev via OpenAI SDK — vision + text context</p>
     </div>
     <div class="flow-step">
       <span class="num">04</span>
@@ -603,11 +603,12 @@
     <div class="arch-card card-voice">
       <div class="card-icon">&#x1F399;</div>
       <h3>Voice Agent</h3>
-      <div class="card-sub">voice_loop.py &mdash; Whisper + Orin Nano</div>
+      <div class="card-sub">voice_loop.py &mdash; Brev + Local TTS</div>
       <ul>
         <li>PyAudio capture, silence detection</li>
         <li>Whisper transcription</li>
-        <li>Conversational Orin Nano agent</li>
+        <li>Brev platform via OpenAI SDK (vision + text)</li>
+        <li>Local lightweight TTS on Orin Nano</li>
         <li>Parses <code>ACTION_GRANT</code> / <code>ACTION_DENY</code></li>
       </ul>
     </div>
@@ -637,8 +638,8 @@
   <div class="tech-bar">
     <span class="tech-chip">NVIDIA Jetson Orin Nano</span>
     <span class="tech-chip">Reachy Mini (Pollen Robotics)</span>
-    <span class="tech-chip">Hugging Face Models</span>
-    <span class="tech-chip">Seeed Studio</span>
+    <span class="tech-chip">Brev (LLM Inference)</span>
+    <span class="tech-chip">OpenAI SDK</span>
     <span class="tech-chip">FastAPI</span>
     <span class="tech-chip">dnsmasq</span>
     <span class="tech-chip">SQLite</span>
