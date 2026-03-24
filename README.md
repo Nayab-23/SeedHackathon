@@ -1,21 +1,45 @@
-# StudyGuard
+<p align="center">
+  <img src="assets/banner.svg" alt="StudyGuard Banner" width="100%"/>
+</p>
 
-An AI-powered study companion that keeps kids focused using computer vision, voice interaction, smart website blocking, and a physical robot buddy.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776ab?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/>
+  <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI"/>
+  <img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="OpenCV"/>
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite"/>
+</p>
+
+<p align="center">
+  <b>An AI-powered study companion that keeps kids focused using computer vision, voice interaction, smart website blocking, and a physical robot buddy.</b>
+</p>
 
 ---
 
-## What It Does
-
-StudyGuard monitors a child's study session through a camera and classifies their state as **studying**, **distracted**, or **on their phone**. A voice agent provides real-time guidance, and a [Reachy Mini](https://www.pollen-robotics.com/reachy-mini/) robot reacts with physical gestures. Distracting websites are blocked at the DNS level — but kids can argue their case to the AI to get temporary access.
-
 ## Features
 
-- **Vision Monitoring** — Real-time camera analysis via OpenAI Vision API with live dashboard streaming
-- **Voice Agent** — Natural speech interaction with speech-to-text and text-to-speech
-- **Smart Website Blocking** — DNS-level blocking (YouTube, Instagram, TikTok, Twitter, Reddit) with AI-evaluated unlock requests
-- **Robot Companion** — Reachy Mini reacts to study state changes with head and antenna gestures
-- **Parent Dashboard** — Web UI for live monitoring, site management, activity logs, and system health
-- **Activity Tracking** — SQLite-backed session and event logging with daily stats
+<p align="center">
+  <img src="assets/features.svg" alt="StudyGuard Features" width="100%"/>
+</p>
+
+| Feature | Description |
+|---------|-------------|
+| **Vision Monitoring** | Real-time camera analysis via OpenAI Vision API with live dashboard streaming |
+| **Voice Agent** | Natural speech interaction with speech-to-text and text-to-speech |
+| **Smart Website Blocking** | DNS-level blocking (YouTube, Instagram, TikTok, Twitter, Reddit) with AI-evaluated unlock requests |
+| **Robot Companion** | Reachy Mini reacts to study state changes with head and antenna gestures |
+| **Parent Dashboard** | Web UI for live monitoring, site management, activity logs, and system health |
+| **Activity Tracking** | SQLite-backed session and event logging with daily stats |
+
+---
+
+## Architecture
+
+<p align="center">
+  <img src="assets/architecture.svg" alt="System Architecture" width="100%"/>
+</p>
+
+---
 
 ## Tech Stack
 
@@ -46,7 +70,9 @@ StudyGuard monitors a child's study session through a camera and classifies thei
 └── run.sh                  # Startup script
 ```
 
-## Setup
+---
+
+## Getting Started
 
 ### Prerequisites
 
@@ -92,6 +118,8 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000
 ```
 
 Open **http://localhost:8000** for the dashboard.
+
+---
 
 ## API
 

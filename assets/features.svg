@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 280">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0c29"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+    <filter id="card-shadow">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="280" fill="url(#bg3)" rx="12"/>
+
+  <!-- Card 1: Vision -->
+  <g filter="url(#card-shadow)">
+    <rect x="20" y="20" width="185" height="240" rx="12" fill="#1a1a2e" stroke="#7b2ff7" stroke-width="1.5" stroke-opacity="0.5"/>
+    <rect x="20" y="20" width="185" height="4" rx="2" fill="#7b2ff7"/>
+    <circle cx="112" cy="80" r="28" fill="#7b2ff7" opacity="0.12"/>
+    <ellipse cx="112" cy="80" rx="20" ry="13" fill="none" stroke="#7b2ff7" stroke-width="2"/>
+    <circle cx="112" cy="80" r="6" fill="#7b2ff7" opacity="0.7"/>
+    <text x="112" y="130" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#c4b5fd" text-anchor="middle" font-weight="600">Vision AI</text>
+    <text x="112" y="152" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">Real-time camera</text>
+    <text x="112" y="167" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">monitoring with</text>
+    <text x="112" y="182" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">GPT-4 Vision</text>
+    <!-- Status indicators -->
+    <circle cx="60" cy="215" r="4" fill="#4ade80" opacity="0.8"/>
+    <text x="72" y="219" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#64748b">Studying</text>
+    <circle cx="60" cy="232" r="4" fill="#fbbf24" opacity="0.8"/>
+    <text x="72" y="236" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#64748b">Distracted</text>
+    <circle cx="120" cy="215" r="4" fill="#ef4444" opacity="0.8"/>
+    <text x="132" y="219" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#64748b">On Phone</text>
+  </g>
+
+  <!-- Card 2: Voice -->
+  <g filter="url(#card-shadow)">
+    <rect x="215" y="20" width="185" height="240" rx="12" fill="#1a1a2e" stroke="#00d2ff" stroke-width="1.5" stroke-opacity="0.5"/>
+    <rect x="215" y="20" width="185" height="4" rx="2" fill="#00d2ff"/>
+    <circle cx="307" cy="80" r="28" fill="#00d2ff" opacity="0.12"/>
+    <!-- Sound waves -->
+    <path d="M295 72 Q295 80 295 88" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+    <path d="M302 66 Q302 80 302 94" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+    <path d="M309 60 Q309 80 309 100" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+    <path d="M316 66 Q316 80 316 94" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+    <path d="M323 72 Q323 80 323 88" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+    <text x="307" y="130" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#67e8f9" text-anchor="middle" font-weight="600">Voice Agent</text>
+    <text x="307" y="152" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">Natural speech</text>
+    <text x="307" y="167" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">interaction with</text>
+    <text x="307" y="182" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">STT &amp; TTS</text>
+    <text x="307" y="218" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#00d2ff" text-anchor="middle" opacity="0.6">"Hey, stay focused!"</text>
+    <text x="307" y="235" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#00d2ff" text-anchor="middle" opacity="0.4">"Great job studying!"</text>
+  </g>
+
+  <!-- Card 3: DNS Blocking -->
+  <g filter="url(#card-shadow)">
+    <rect x="410" y="20" width="185" height="240" rx="12" fill="#1a1a2e" stroke="#ef4444" stroke-width="1.5" stroke-opacity="0.5"/>
+    <rect x="410" y="20" width="185" height="4" rx="2" fill="#ef4444"/>
+    <circle cx="502" cy="80" r="28" fill="#ef4444" opacity="0.12"/>
+    <!-- Shield with X -->
+    <path d="M502 58 L522 67 L522 85 C522 97 513 105 502 110 C491 105 482 97 482 85 L482 67 Z" fill="none" stroke="#ef4444" stroke-width="2"/>
+    <line x1="494" y1="77" x2="510" y2="93" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+    <line x1="510" y1="77" x2="494" y2="93" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+    <text x="502" y="130" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#fca5a5" text-anchor="middle" font-weight="600">Smart Blocking</text>
+    <text x="502" y="152" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">DNS-level site</text>
+    <text x="502" y="167" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">blocking with AI</text>
+    <text x="502" y="182" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">unlock evaluation</text>
+    <text x="502" y="218" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#ef4444" text-anchor="middle" opacity="0.5" text-decoration="line-through">youtube.com</text>
+    <text x="502" y="235" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#ef4444" text-anchor="middle" opacity="0.5" text-decoration="line-through">tiktok.com</text>
+  </g>
+
+  <!-- Card 4: Robot -->
+  <g filter="url(#card-shadow)">
+    <rect x="605" y="20" width="185" height="240" rx="12" fill="#1a1a2e" stroke="#4ade80" stroke-width="1.5" stroke-opacity="0.5"/>
+    <rect x="605" y="20" width="185" height="4" rx="2" fill="#4ade80"/>
+    <circle cx="697" cy="80" r="28" fill="#4ade80" opacity="0.12"/>
+    <!-- Robot face -->
+    <rect x="681" y="64" width="32" height="28" rx="6" fill="none" stroke="#4ade80" stroke-width="2"/>
+    <circle cx="690" cy="76" r="3" fill="#4ade80"/>
+    <circle cx="704" cy="76" r="3" fill="#4ade80"/>
+    <line x1="688" y1="84" x2="706" y2="84" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="697" y1="64" x2="697" y2="56" stroke="#4ade80" stroke-width="1.5"/>
+    <circle cx="697" cy="53" r="3" fill="#4ade80" opacity="0.7"/>
+    <text x="697" y="130" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#86efac" text-anchor="middle" font-weight="600">Robot Buddy</text>
+    <text x="697" y="152" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">Reachy Mini reacts</text>
+    <text x="697" y="167" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">with head &amp; antenna</text>
+    <text x="697" y="182" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">gestures</text>
+    <text x="697" y="220" font-family="'Segoe UI', Arial, sans-serif" font-size="20" fill="#4ade80" text-anchor="middle" opacity="0.5">^_^</text>
+  </g>
+
+  <!-- Card 5: Dashboard -->
+  <g filter="url(#card-shadow)">
+    <rect x="800" y="20" width="185" height="240" rx="12" fill="#1a1a2e" stroke="#f472b6" stroke-width="1.5" stroke-opacity="0.5"/>
+    <rect x="800" y="20" width="185" height="4" rx="2" fill="#f472b6"/>
+    <circle cx="892" cy="80" r="28" fill="#f472b6" opacity="0.12"/>
+    <!-- Dashboard icon -->
+    <rect x="874" y="64" width="36" height="28" rx="4" fill="none" stroke="#f472b6" stroke-width="1.5"/>
+    <line x1="874" y1="74" x2="910" y2="74" stroke="#f472b6" stroke-width="1"/>
+    <rect x="878" y="78" width="12" height="10" rx="1" fill="#f472b6" opacity="0.3"/>
+    <rect x="894" y="78" width="12" height="10" rx="1" fill="#f472b6" opacity="0.3"/>
+    <text x="892" y="130" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#f9a8d4" text-anchor="middle" font-weight="600">Dashboard</text>
+    <text x="892" y="152" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">Live monitoring,</text>
+    <text x="892" y="167" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">site management</text>
+    <text x="892" y="182" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8b8ba7" text-anchor="middle">&amp; activity logs</text>
+    <!-- Mini stats bars -->
+    <rect x="855" y="230" width="8" height="20" rx="2" fill="#f472b6" opacity="0.3"/>
+    <rect x="868" y="222" width="8" height="28" rx="2" fill="#f472b6" opacity="0.4"/>
+    <rect x="881" y="218" width="8" height="32" rx="2" fill="#f472b6" opacity="0.5"/>
+    <rect x="894" y="210" width="8" height="40" rx="2" fill="#f472b6" opacity="0.6"/>
+    <rect x="907" y="215" width="8" height="35" rx="2" fill="#f472b6" opacity="0.5"/>
+    <rect x="920" y="225" width="8" height="25" rx="2" fill="#f472b6" opacity="0.4"/>
+  </g>
+</svg>
