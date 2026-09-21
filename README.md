@@ -1,74 +1,30 @@
-<p align="center">
-  <img src="assets/banner.svg" alt="StudyGuard Banner" width="100%"/>
-</p>
+# StudyGuard
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10+-3776ab?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/>
-  <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI"/>
-  <img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="OpenCV"/>
-  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite"/>
-</p>
-
-<p align="center">
-  <b>An AI-powered study companion that keeps kids focused using computer vision, voice interaction, smart website blocking, a physical robot buddy, and NVIDIA Omniverse simulation.</b>
-</p>
-
----
+StudyGuard watches a study session through a webcam and decides whether the person in frame is actually studying. If they aren't, it blocks distracting sites over DNS, speaks up through a voice agent, and makes a Reachy Mini react, while a parent dashboard shows what is going on. An Isaac Sim copy of the room runs the same pipeline without a real camera.
 
 ## Features
 
-<p align="center">
-  <img src="assets/features.svg" alt="StudyGuard Features" width="100%"/>
-</p>
-
-| Feature | Description |
+| Feature | What it does |
 |---------|-------------|
-| **Vision Monitoring** | Real-time camera analysis via the StudyGuard vision pipeline with live dashboard streaming |
-| **Voice Agent** | Natural speech interaction with speech-to-text and text-to-speech |
-| **Smart Website Blocking** | DNS-level blocking with AI-evaluated unlock requests |
-| **Robot Companion** | Reachy Mini reacts to study state changes with head and antenna gestures |
-| **Parent Dashboard** | Web UI for live monitoring, site management, activity logs, and system health |
-| **Activity Tracking** | SQLite-backed session and event logging with daily stats |
-| **NVIDIA Omniverse Simulation** | Isaac Sim synthetic-camera mode for scenario testing before real deployment |
+| Vision monitoring | Real-time camera analysis, streamed to the dashboard |
+| Voice agent | Speech in, speech out |
+| Website blocking | DNS-level blocks; AI rules on unlock requests |
+| Robot companion | Reachy Mini reacts with head and antenna moves |
+| Parent dashboard | Live view, site management, logs, system health |
+| Activity tracking | Sessions and events in SQLite, plus daily stats |
+| Omniverse simulation | Isaac Sim synthetic camera for testing before real deployment |
 
----
+## How it fits together
 
-## Omniverse Integration
+A Jetson Orin Nano runs the FastAPI backend, DNS controls, state tracking and local AI. A Reachy Mini gives the physical reaction. Omniverse and Isaac Sim make the study-room scene, the Replicator data and the synthetic camera feed. The dashboard gives parents visibility, moderation and activity review.
 
-StudyGuard now deeply integrates **NVIDIA Omniverse** and **Isaac Sim** as its simulation and synthetic-data layer. Before real-world deployment, the team uses Omniverse to build and iterate on a virtual study-room environment that mirrors the conditions the system must handle in production.
+Backend is FastAPI, SQLAlchemy, OpenAI API, OpenCV and PyAudio. Frontend is vanilla JS with HTML/CSS. DNS is dnsmasq, the robot uses the `reachy_mini` SDK, storage is SQLite.
 
-The Isaac Sim scene includes:
+## Omniverse and Isaac Sim
 
-- desk
-- chair
-- laptop
-- book
-- notebook
-- phone
-- lamp
-- virtual camera
-- robot avatar
-- multiple student identities
+Isaac Sim holds a virtual copy of the study room: desk, chair, laptop, book, notebook, phone, lamp, a camera, a robot avatar and a few student identities. Replicator renders labelled frames from it, so monitoring, identity recognition, attention detection, robot feedback and blocking can all be tested without a live webcam.
 
-This simulation layer lets the team test monitoring, identity recognition, attention-state detection, robot feedback, and enforcement flows without depending only on live webcam sessions.
-
-## Synthetic Scenario Coverage
-
-Using **Omniverse / Isaac Sim Replicator**, StudyGuard generates synthetic RGB frames and labels for scenarios such as:
-
-- Jason studying
-- Jason using a phone
-- Jason distracted
-- Nayab detected
-- unknown person entering
-- bad lighting
-- messy desk
-- phone occlusion
-- side camera angles
-- multiple people in frame
-
-Generated labels are structured around identity, study state, and visible objects:
+Scenarios cover Jason studying, on his phone or distracted; Nayab detected; a stranger walking in; bad lighting; a messy desk; an occluded phone; side camera angles; and more than one person in frame. Labels:
 
 ```text
 identity = Jason / Nayab / unknown
@@ -76,87 +32,40 @@ state = studying / phone_use / distracted
 objects = person / phone / book / laptop / notebook
 ```
 
-When the dashboard triggers **Run NVIDIA Omniverse Simulation Test**, synthetic frames are streamed into StudyGuard through the simulation camera path, then processed by the existing vision pipeline so the normal dashboard logs, robot reactions, identity detection, and DNS blocking behavior all activate exactly as they do in live mode.
+Press Run NVIDIA Omniverse Simulation Test on the dashboard and those frames arrive through the simulation camera path. Everything downstream behaves as if it were live: dashboard logs, robot reactions, identity detection, DNS blocking.
 
----
-
-## Architecture
-
-<p align="center">
-  <img src="assets/architecture.svg" alt="System Architecture" width="100%"/>
-</p>
-
-StudyGuard is organized across four connected layers:
-
-1. **Edge Compute Layer (NVIDIA Jetson Orin Nano)**: FastAPI backend, DNS controls, state tracking, and local AI orchestration.
-2. **Embodied Interface (Reachy Mini)**: Physical robot feedback and interaction.
-3. **Simulation + Synthetic Data Layer (NVIDIA Omniverse / Isaac Sim)**: Virtual study-room scene generation, Replicator data generation, and synthetic camera playback.
-4. **Parent Communication Layer**: Dashboard visibility, moderation oversight, and activity review.
-
----
-
-## Tech Stack
-
-| Layer | Tools |
-|-------|-------|
-| Backend | FastAPI, SQLAlchemy, OpenAI API, OpenCV, PyAudio |
-| Frontend | Vanilla JS, HTML/CSS |
-| DNS | dnsmasq |
-| Robotics | `reachy_mini` SDK |
-| Simulation | NVIDIA Omniverse, Isaac Sim, Replicator |
-| Database | SQLite |
-
-## Project Structure
+## Layout
 
 ```text
-├── backend/
-│   ├── main.py               # FastAPI server and startup
-│   ├── vision.py             # Camera monitoring and classification
-│   ├── voice_loop.py         # Voice agent and speech processing
-│   ├── argue.py              # Website access request evaluation
-│   ├── reachy_control.py     # Robot gesture control
-│   ├── database.py           # Models and DB setup
-│   └── sim_camera.py         # Omniverse synthetic frame input path
-├── frontend/
-│   ├── index.html            # Dashboard UI
-│   ├── dashboard.js          # Dashboard logic
-│   └── style.css             # Styling
-├── simulation/               # Omniverse scenes, scripts, frames, and labels
-├── robot_photo_demo.py       # Single-frame Reachy camera capture
-├── robot_video_360_demo.py   # Reachy 360-degree video capture
-├── requirements.txt
-└── run.sh                    # Startup script
+backend/
+  main.py             FastAPI server and startup
+  vision.py           camera monitoring and classification
+  voice_loop.py       voice agent and speech processing
+  argue.py            website access requests
+  reachy_control.py   robot gestures
+  database.py         models and DB setup
+  sim_camera.py       Omniverse synthetic frame input
+frontend/             index.html, dashboard.js, style.css
+simulation/           Omniverse scenes, scripts, frames, labels
+robot_photo_demo.py       single-frame Reachy capture
+robot_video_360_demo.py   Reachy 360-degree video
+run.sh                    startup script
 ```
 
----
+## Getting started
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3.10+
-- OpenAI API key
-- Camera and microphone
-- Optional: Reachy Mini robot, dnsmasq, NVIDIA Omniverse / Isaac Sim
-
-### Install
+You need Python 3.10+, an OpenAI API key, a camera and a mic. Reachy Mini, dnsmasq and Omniverse / Isaac Sim are optional.
 
 ```bash
 git clone https://github.com/Nayab-23/SeedHackathon.git
 cd SeedHackathon
-python -m venv venv
-source venv/bin/activate
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Configure
-
-Create a `.env` file:
+Put `OPENAI_API_KEY=your-key-here` in a `.env`. Everything else is optional:
 
 ```env
-OPENAI_API_KEY=your-key-here
-
-# Optional
 DATABASE_URL=sqlite:///./studyguard.db
 DNS_LOG_PATH=./dnsmasq.log
 CAMERA_INDEX=0
@@ -167,37 +76,21 @@ STUDYGUARD_AUDIO_SINK=default
 STUDYGUARD_AUDIO_SOURCE=default
 ```
 
-### Run
+Then run it and open http://localhost:8000:
 
 ```bash
-./run.sh
-# or
-uvicorn backend.main:app --host 0.0.0.0 --port 8000
+./run.sh   # or: uvicorn backend.main:app --host 0.0.0.0 --port 8000
 ```
 
-Open **http://localhost:8000** for the dashboard.
-
----
-
-## Reachy Camera Demos
-
-Capture a single PNG photo from the Reachy Mini camera:
+## Reachy camera demos
 
 ```bash
 source .reachy-mini-venv/bin/activate
-python robot_photo_demo.py --host reachy-mini.local
+python robot_photo_demo.py --host reachy-mini.local         # one photo
+python robot_video_360_demo.py --duration 10 --return-home  # 10s video, full turn
 ```
 
-Capture a 10-second video while commanding the robot through a full turn:
-
-```bash
-source .reachy-mini-venv/bin/activate
-python robot_video_360_demo.py --duration 10 --return-home
-```
-
-Both scripts save output under `captures/` by default.
-
----
+Both save to `captures/` by default.
 
 ## API
 
@@ -209,13 +102,11 @@ Both scripts save output under `captures/` by default.
 | `GET /api/camera/stream` | Live MJPEG stream |
 | `GET /api/events` | Activity log |
 | `GET /api/logs/dns` | DNS query logs |
-| `GET /api/blocklist` | Blocked domains |
-| `POST /api/blocklist` | Add blocked domain |
-| `DELETE /api/blocklist/{domain}` | Unblock domain |
+| `GET` / `POST /api/blocklist`, `DELETE /api/blocklist/{domain}` | List, add and remove blocked domains |
 | `POST /api/argue` | Submit access argument |
 | `POST /api/voice/listening` | Toggle microphone |
 | `GET /api/voice/conversation` | Conversation transcript |
 
-## Future Extension
+## What's next
 
-Planned next steps include **MCP support** so tools such as Codex and Claude can directly control Isaac Sim / Omniverse scenario generation for faster synthetic-scene iteration and automated simulation workflows.
+MCP support, so Codex and Claude can generate Omniverse scenarios directly for faster iteration and automated simulation runs.
